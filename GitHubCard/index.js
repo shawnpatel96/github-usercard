@@ -16,9 +16,10 @@ axios.get("https://api.github.com/users/shawnpatel96")
 
 setTimeout(function(){
   axios.get("https://api.github.com/users/shawnpatel96/followers")
+  
   .then(response=>{
     response.data.map(items=>{
-      followersArray.push(items.login)
+     followersArray.push(items.login)
     })
   })
   followersArray.forEach(users=> {
@@ -28,6 +29,14 @@ setTimeout(function(){
       let myCard = cardCreator(res.data);
       cards.append(myCard);
     })
+  })
+
+  /////////////////
+  let myFollowers= followersArray.map(items=>{
+    return `"https://api.github.com/users/shawnpatel96/followers`
+  })
+  myFollowers.forEach(items=>{
+    cards.append(cardCreator(response.data))
   })
 }, 500);
 
