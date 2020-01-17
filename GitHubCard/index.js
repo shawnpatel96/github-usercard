@@ -2,18 +2,63 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const cards = document.querySelector('.cards')
+axios.get("https://api.github.com/users/shawnpatel96")
+.then(response =>{
+  // console.log(response)
+    const myCard = cardCreator(response.data);
+    cards.append(myCard);
+})
 
-/* Step 2: Inspect and study the data coming back, this is YOUR 
-   github info! You will need to understand the structure of this 
-   data in order to use it to build your component function 
+.catch( error => {
+  console.log("no data ", error)
+})
 
-   Skip to Step 3.
-*/
+setTimeout(function(){
+  axios.get("https://api.github.com/users/shawnpatel96/followers")
+  .then(response=>{
+    response.data.map(items=>{
+      followersArray.push(items.login);
+    })
+  })
+  followersArray.forEach(user =>{
+    axios.get(`https://api.github.com/users/${user}`)
+    .then(response=>{
+      const cards=document.querySelector('.cards');
+      const newFollower=cardCreator(response.data);
+      cards.append(newFollower);
+    })
+  })
+  const myFollowers = followersArray.map(items=>{
+    return `https://api.github.com/users/${items}`
+    //return `https://api.github.com/users/shawnpatel96/followers`
+  })
+
+  myFollowers.forEach(items=>{
+    axios.get(items)
+    .then(response=>{
+      cards.append(cardCreator(response.data.login))
+    })
+    .catch(error=>{
+      console.log(error)
+    })
+  })
+
+  
+}, 500);
+
+let followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell', 'thisguycodez'];   
+console.log(followersArray);   // array showing all 12 people
 
 /* Step 4: Pass the data received from Github into your function, 
-           create a new component and add it to the DOM as a child of .cards
+           create a new component and add it to the DOM as a child of .cards  (cards is the big parent in html)
 */
 
+
+
+
+
+//  console.log(cards);
 /* Step 5: Now that you have your own card getting added to the DOM, either 
           follow this link in your browser https://api.github.com/users/<Your github name>/followers 
           , manually find some other users' github handles, or use the list found 
@@ -24,7 +69,8 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+
+
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -45,6 +91,55 @@ const followersArray = [];
 </div>
 
 */
+function cardCreator(object){
+  // Creating Elements
+  const newImage = document.createElement('img');
+  const cardParent = document.createElement('div');     // Main Parent    
+  const cardInfo = document.createElement('div');    
+  const nameInfo = document.createElement('h3');      
+  const usernameInfo = document.createElement('p'); 
+  const link= document.createElement('a')
+  // P elements with no class name
+  const locationParagraph = document.createElement('p');
+  const profileParagraph = document.createElement('p');
+  const followersParagraph = document.createElement('p');
+  const followingParagraph = document.createElement('p');
+  const bioParagraph = document.createElement('p');
+
+  // Assigning class Names
+  newImage.src= object.avatar_url;
+  cardParent.classList.add('card');                     // Main parent given class name of 'card'                
+  cardInfo.classList.add('card-info');               
+  nameInfo.classList.add('name');                    
+  usernameInfo.classList.add('username');  
+
+  //Appending Children to Parent
+  cardParent.append(newImage);
+  cardParent.append(cardInfo);
+  cardInfo.append(nameInfo);
+  cardInfo.append(usernameInfo);
+  cardInfo.append(locationParagraph);
+  cardInfo.append(profileParagraph);
+  cardInfo.append(followersParagraph);
+  cardInfo.append(followingParagraph);
+  cardInfo.append(bioParagraph);
+
+  //Text Content
+  newImage.src= object.avatar_url;
+  nameInfo.textContent=object.name;
+  usernameInfo.textContent=object.login;
+  locationParagraph.textContent=`Location: ${object.location}`;
+  profileParagraph.textContent=`Profile: ${object.html_url}`;
+  followersParagraph.textContent= `Followers: ${object.followers}`;
+  followingParagraph.textContent=`Following: ${object.following}`;
+  bioParagraph.textContent=`Bio: ${object.bio}`;
+
+
+
+
+  return cardParent
+}
+// console.log(cardCreator);
 
 /* List of LS Instructors Github username's: 
   tetondan
