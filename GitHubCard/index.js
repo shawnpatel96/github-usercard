@@ -15,6 +15,12 @@ axios.get("https://api.github.com/users/shawnpatel96")
 })
 
 setTimeout(function(){
+  axios.get("https://api.github.com/users/shawnpatel96/followers")
+  .then(response=>{
+    response.data.map(items=>{
+      followersArray.push(items.login)
+    })
+  })
   followersArray.forEach(users=> {
     axios.get(`https://api.github.com/users/${users}`)
     .then(res=>{
