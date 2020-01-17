@@ -2,10 +2,10 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const cards = document.querySelector('.cards')
 axios.get("https://api.github.com/users/shawnpatel96")
 .then(response =>{
-  console.log(response)
-    const cards = document.querySelector('.cards')
+  // console.log(response)
     const myCard = cardCreator(response.data);
     cards.append(myCard);
 })
@@ -16,31 +16,39 @@ axios.get("https://api.github.com/users/shawnpatel96")
 
 setTimeout(function(){
   axios.get("https://api.github.com/users/shawnpatel96/followers")
-  
   .then(response=>{
     response.data.map(items=>{
-     followersArray.push(items.login)
+      followersArray.push(items.login);
     })
   })
-  followersArray.forEach(users=> {
-    axios.get(`https://api.github.com/users/${users}`)
-    .then(res=>{
-      let cards = document.querySelector('.cards')
-      let myCard = cardCreator(res.data);
-      cards.append(myCard);
+  followersArray.forEach(user =>{
+    axios.get(`https://api.github.com/users/${user}`)
+    .then(response=>{
+      const cards=document.querySelector('.cards');
+      const newFollower=cardCreator(response.data);
+      cards.append(newFollower);
+    })
+  })
+  const myFollowers = followersArray.map(items=>{
+    return `https://api.github.com/users/${items}`
+    //return `https://api.github.com/users/shawnpatel96/followers`
+  })
+
+  myFollowers.forEach(items=>{
+    axios.get(items)
+    .then(response=>{
+      cards.append(cardCreator(response.data.login))
+    })
+    .catch(error=>{
+      console.log(error)
     })
   })
 
-  /////////////////
-  let myFollowers= followersArray.map(items=>{
-    return `"https://api.github.com/users/shawnpatel96/followers`
-  })
-  myFollowers.forEach(items=>{
-    cards.append(cardCreator(response.data))
-  })
+  
 }, 500);
 
-const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+let followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell', 'thisguycodez'];   
+console.log(followersArray);   // array showing all 12 people
 
 /* Step 4: Pass the data received from Github into your function, 
            create a new component and add it to the DOM as a child of .cards  (cards is the big parent in html)
@@ -62,15 +70,7 @@ const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigkne
 */
 
 
-followersArray.forEach(user =>{
-axios.get(`https://api.github.com/users/${user}`)
-.then(response=>{
-  const cards=document.querySelector('.cards');
-  const newFollower=cardCreator(response.data);
-  cards.append(newFollower);
 
-})
-})
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -129,10 +129,10 @@ function cardCreator(object){
   nameInfo.textContent=object.name;
   usernameInfo.textContent=object.login;
   locationParagraph.textContent=`Location: ${object.location}`;
-  profileParagraph.textContent=object.html_url;
+  profileParagraph.textContent=`Profile: ${object.html_url}`;
   followersParagraph.textContent= `Followers: ${object.followers}`;
   followingParagraph.textContent=`Following: ${object.following}`;
-  bioParagraph.textContent=object.bio;
+  bioParagraph.textContent=`Bio: ${object.bio}`;
 
 
 
